@@ -17,7 +17,15 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "angular-dnd": [
+        "dist/angular-dnd"
+      ],
+      "angular-dnd/*": [
+        "dist/angular-dnd/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
