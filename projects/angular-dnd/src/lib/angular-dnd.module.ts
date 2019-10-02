@@ -1,12 +1,25 @@
 import { NgModule } from '@angular/core';
-import { AngularDndComponent } from './angular-dnd.component';
-
-
+import { DragDirective } from './directives/drag.directive';
+import { DropDirective } from './directives/drop.directive';
+import {CommonModule} from '@angular/common';
+import {BrowserModule} from '@angular/platform-browser';
+import {DndStoreService} from './services/dnd-store.service';
+import {DndEventsService} from './services/dnd-events.service';
 
 @NgModule({
-  declarations: [AngularDndComponent],
+  declarations: [DragDirective, DropDirective],
   imports: [
+    BrowserModule,
+    CommonModule
   ],
-  exports: [AngularDndComponent]
+  providers: [
+    DndStoreService,
+    DndEventsService
+  ],
+  exports: [
+    DragDirective,
+    DropDirective
+  ]
 })
-export class AngularDndModule { }
+export class AngularDndModule {
+}

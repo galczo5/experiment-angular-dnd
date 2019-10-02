@@ -7,4 +7,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'dnd-app';
+
+  log(data: any): void {
+    console.log('dropped', data);
+  }
 }
