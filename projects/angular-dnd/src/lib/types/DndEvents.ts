@@ -1,0 +1,5 @@
+export enum DndEvent {
+  DRAG_STARTED = 'DRAG_STARTED',
+  DRAG_ENDED = 'DRAG_ENDED',
+  ITEMS_DROPPED = 'ITEMS_DROPPED'
+}
