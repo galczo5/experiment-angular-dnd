@@ -5,9 +5,10 @@ import {CommonModule} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
 import {DndStoreService} from './services/dnd-store.service';
 import {DndEventsService} from './services/dnd-events.service';
+import { DragHandleDirective } from './directives/drag-handle.directive';
 
 @NgModule({
-  declarations: [DragDirective, DropDirective],
+  declarations: [DragDirective, DropDirective, DragHandleDirective],
   imports: [
     BrowserModule,
     CommonModule
@@ -18,7 +19,8 @@ import {DndEventsService} from './services/dnd-events.service';
   ],
   exports: [
     DragDirective,
-    DropDirective
+    DropDirective,
+    DragHandleDirective
   ]
 })
 export class AngularDndModule {

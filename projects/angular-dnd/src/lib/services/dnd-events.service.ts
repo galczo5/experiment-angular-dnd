@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {DndEvent} from '../types/DndEvents';
+import {filter} from "rxjs/operators";
 
 @Injectable()
 export class DndEventsService {
@@ -23,5 +24,9 @@ export class DndEventsService {
 
   events(): Observable<DndEvent> {
     return this.events$.asObservable();
+  }
+
+  filteredEvents(event: DndEvent): Observable<DndEvent> {
+    return this.events$.pipe(filter(e => e === event));
   }
 }

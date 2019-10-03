@@ -1,8 +1,0 @@
-.dnd-draggable {
-  cursor: move;
-}
-
-.dnd-drag {
-  position: absolute;
-  transition: none;
-}

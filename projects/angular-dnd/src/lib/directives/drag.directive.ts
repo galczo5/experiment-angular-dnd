@@ -1,13 +1,13 @@
-import {Directive, ElementRef, Inject, Input, NgZone, OnInit, Renderer2} from '@angular/core';
+import {Directive, ElementRef, Inject, Input, NgZone, OnInit} from '@angular/core';
 import {DndEventsService} from '../services/dnd-events.service';
 import {DndStoreService} from '../services/dnd-store.service';
-import {fromEvent, Subject} from 'rxjs';
+import {fromEvent, Subject, Subscription} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
-import {filter, takeUntil} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators';
 import {Position} from '../types/Position';
 
-import '../styles.css';
 import {DndEvent} from '../types/DndEvents';
+import {DndStylesService} from '../services/dnd-styles.service';
 
 @Directive({
   selector: '[dndDrag]'
@@ -17,86 +17,81 @@ export class DragDirective implements OnInit {
   @Input('dndDrag')
   data: any;
 
+  private dragHandle: HTMLElement;
+  private dragStartListener: Subscription;
   private readonly nativeElement: HTMLElement;
   private readonly drag$: Subject<void> = new Subject<void>();
 
-  constructor(private readonly renderer: Renderer2,
-              private readonly zone: NgZone,
+  constructor(private readonly zone: NgZone,
               private readonly eventsService: DndEventsService,
               private readonly storeService: DndStoreService,
+              private readonly stylesService: DndStylesService,
               @Inject(DOCUMENT) private readonly document: Document,
               el: ElementRef) {
     this.nativeElement = el.nativeElement;
   }
 
   ngOnInit(): void {
-    this.registerDragStartListener();
-    this.renderer.setStyle(this.nativeElement, 'cursor', 'move');
-    this.renderer.setStyle(this.nativeElement, 'user-select', 'none');
-
-    this.eventsService.events()
-      .pipe(filter(e => e === DndEvent.ITEMS_DROPPED))
+    this.setDragHandle(this.nativeElement);
+    this.eventsService.filteredEvents(DndEvent.ITEMS_DROPPED)
       .subscribe(() => {
-        this.drag$.next();
+        this.unregisterDragListener();
         this.eventsService.endDrag();
       });
   }
 
+  setDragHandle(el: HTMLElement): void {
+    if (this.dragStartListener) {
+      this.stylesService.resetHandleStyles(this.dragHandle);
+      this.dragStartListener.unsubscribe();
+    }
+
+    this.dragHandle = el;
+    this.registerDragStartListener();
+    this.stylesService.setHandleStyles(this.dragHandle);
+  }
+
   private registerDragStartListener(): void {
     this.zone.runOutsideAngular(() => {
-      fromEvent(this.nativeElement, 'mousedown')
-        .subscribe(() => {
-          this.startDrag();
-          this.registerDragOverListener();
-          this.registerDragEndListener();
-        });
+      this.dragStartListener = fromEvent(this.dragHandle, 'mousedown')
+        .subscribe(() => this.startDrag());
     });
   }
 
-  private registerDragOverListener(): void {
+  private registerDragListener(): void {
     this.zone.runOutsideAngular(() => {
       fromEvent(this.document, 'mousemove')
         .pipe(takeUntil(this.drag$))
-        .subscribe((event: MouseEvent) => {
-          const position: Position = event;
-          this.drag(position);
-        });
+        .subscribe((event: MouseEvent) => this.drag(event));
+
+      fromEvent(this.document, 'mouseup')
+        .pipe(takeUntil(this.drag$))
+        .subscribe(() => this.endDrag());
     });
   }
 
-  private registerDragEndListener(): void {
-    this.zone.runOutsideAngular(() => {
-      fromEvent(this.document, 'mouseup')
-        .pipe(takeUntil(this.drag$))
-        .subscribe(() => {
-          this.endDrag();
-          this.drag$.next();
-        });
-    });
+  private unregisterDragListener(): void {
+    this.drag$.next();
   }
 
   private startDrag(): void {
     this.storeService.set({
-      el: this.nativeElement,
+      el: this.dragHandle,
       payload: this.data
     });
 
     this.eventsService.startDrag();
+    this.registerDragListener();
   }
 
   private drag(position: Position): void {
-    this.renderer.setStyle(this.nativeElement, 'position', 'absolute');
-    this.renderer.setStyle(this.nativeElement, 'top', `${position.y}px`);
-    this.renderer.setStyle(this.nativeElement, 'left', `${position.x}px`);
+    this.stylesService.setPosition(this.nativeElement, position);
   }
 
   private endDrag(): void {
-    this.storeService.set(null);
+    this.storeService.clear();
     this.eventsService.endDrag();
-
-    this.renderer.removeStyle(this.nativeElement, 'position');
-    this.renderer.removeStyle(this.nativeElement, 'top');
-    this.renderer.removeStyle(this.nativeElement, 'left');
+    this.stylesService.resetPosition(this.nativeElement);
+    this.unregisterDragListener();
   }
-
 }
