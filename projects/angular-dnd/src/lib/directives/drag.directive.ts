@@ -8,6 +8,7 @@ import {Position} from '../types/Position';
 
 import {DndEvent} from '../types/DndEvents';
 import {DndStylesService} from '../services/dnd-styles.service';
+import {DndCss} from '../types/DndCss';
 
 @Directive({
   selector: '[dndDrag]'
@@ -36,8 +37,15 @@ export class DragDirective implements OnInit {
     this.eventsService.filteredEvents(DndEvent.ITEMS_DROPPED)
       .subscribe(() => {
         this.unregisterDragListener();
+        this.stylesService.removeClass(this.nativeElement, DndCss.DRAG_ACTIVE);
         this.eventsService.endDrag();
       });
+
+    this.eventsService.filteredEvents(DndEvent.DRAG_STARTED)
+      .subscribe(() => this.stylesService.addClass(this.nativeElement, DndCss.DRAG));
+
+    this.eventsService.filteredEvents(DndEvent.DRAG_ENDED)
+      .subscribe(() => this.stylesService.removeClass(this.nativeElement, DndCss.DRAG));
   }
 
   setDragHandle(el: HTMLElement): void {
@@ -58,7 +66,7 @@ export class DragDirective implements OnInit {
     });
   }
 
-  private registerDragListener(): void {
+  private registerDragListeners(): void {
     this.zone.runOutsideAngular(() => {
       fromEvent(this.document, 'mousemove')
         .pipe(takeUntil(this.drag$))
@@ -81,7 +89,8 @@ export class DragDirective implements OnInit {
     });
 
     this.eventsService.startDrag();
-    this.registerDragListener();
+    this.registerDragListeners();
+    this.stylesService.addClass(this.nativeElement, DndCss.DRAG_ACTIVE);
   }
 
   private drag(position: Position): void {

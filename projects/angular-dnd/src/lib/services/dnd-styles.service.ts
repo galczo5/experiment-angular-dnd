@@ -1,5 +1,6 @@
 import {Injectable, Renderer2, RendererFactory2} from '@angular/core';
-import {Position} from "../types/Position";
+import {Position} from '../types/Position';
+import {DndCss} from '../types/DndCss';
 
 @Injectable({
   providedIn: 'root'
@@ -34,5 +35,13 @@ export class DndStylesService {
     this.renderer.removeStyle(el, 'top');
     this.renderer.removeStyle(el, 'left');
     this.renderer.removeStyle(el, 'transform');
+  }
+
+  addClass(el: HTMLElement, css: DndCss): void {
+    this.renderer.addClass(el, css);
+  }
+
+  removeClass(el: HTMLElement, css: DndCss): void {
+    this.renderer.removeClass(el, css);
   }
 }
