@@ -1,4 +1,1 @@
-export interface DragData {
-  el: HTMLElement;
-  payload: any;
-}
+export type DragData = any;

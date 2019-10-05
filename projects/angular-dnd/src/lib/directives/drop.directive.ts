@@ -38,15 +38,15 @@ export class DropDirective implements OnInit {
       });
   }
 
-  private dragEnd(): void {
-    this.stylesService.removeClass(this.nativeElement, DndCss.DROP);
-    this.stylesService.removeClass(this.nativeElement, DndCss.DROP_ACTIVE);
-    this.drag$.next();
+  private dragStart(): void {
+    this.addClass(DndCss.DROP);
+    this.registerDragListeners();
   }
 
-  private dragStart(): void {
-    this.stylesService.addClass(this.nativeElement, DndCss.DROP);
-    this.registerDragListeners();
+  private dragEnd(): void {
+    this.removeClass(DndCss.DROP);
+    this.removeClass(DndCss.DROP_ACTIVE);
+    this.drag$.next();
   }
 
   private registerDragListeners() {
@@ -60,10 +60,18 @@ export class DropDirective implements OnInit {
 
     fromEvent(this.nativeElement, 'mouseenter')
       .pipe(takeUntil(this.drag$))
-      .subscribe(() => this.stylesService.addClass(this.nativeElement, DndCss.DROP_ACTIVE));
+      .subscribe(() => this.addClass(DndCss.DROP_ACTIVE));
 
     fromEvent(this.nativeElement, 'mouseleave')
       .pipe(takeUntil(this.drag$))
-      .subscribe(() => this.stylesService.removeClass(this.nativeElement, DndCss.DROP_ACTIVE));
+      .subscribe(() => this.removeClass(DndCss.DROP_ACTIVE));
+  }
+
+  private addClass(css: DndCss): void {
+    this.stylesService.addClass(this.nativeElement, css);
+  }
+
+  private removeClass(css: DndCss): void {
+    this.stylesService.addClass(this.nativeElement, css);
   }
 }

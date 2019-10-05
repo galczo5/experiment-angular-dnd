@@ -9,6 +9,7 @@ import {Position} from '../types/Position';
 import {DndEvent} from '../types/DndEvents';
 import {DndStylesService} from '../services/dnd-styles.service';
 import {DndCss} from '../types/DndCss';
+import {DragData} from '../types/DragData';
 
 @Directive({
   selector: '[dndDrag]'
@@ -16,7 +17,7 @@ import {DndCss} from '../types/DndCss';
 export class DragDirective implements OnInit {
 
   @Input('dndDrag')
-  data: any;
+  data: DragData;
 
   private dragHandle: HTMLElement;
   private dragStartListener: Subscription;
@@ -34,29 +35,33 @@ export class DragDirective implements OnInit {
 
   ngOnInit(): void {
     this.setDragHandle(this.nativeElement);
-    this.eventsService.filteredEvents(DndEvent.ITEMS_DROPPED)
-      .subscribe(() => {
-        this.unregisterDragListener();
-        this.stylesService.removeClass(this.nativeElement, DndCss.DRAG_ACTIVE);
-        this.eventsService.endDrag();
-      });
-
-    this.eventsService.filteredEvents(DndEvent.DRAG_STARTED)
-      .subscribe(() => this.stylesService.addClass(this.nativeElement, DndCss.DRAG));
-
-    this.eventsService.filteredEvents(DndEvent.DRAG_ENDED)
-      .subscribe(() => this.stylesService.removeClass(this.nativeElement, DndCss.DRAG));
+    this.subscribeForEvents();
   }
 
-  setDragHandle(el: HTMLElement): void {
+  setDragHandle(handle: HTMLElement): void {
     if (this.dragStartListener) {
       this.stylesService.resetHandleStyles(this.dragHandle);
       this.dragStartListener.unsubscribe();
     }
 
-    this.dragHandle = el;
+    this.dragHandle = handle;
     this.registerDragStartListener();
     this.stylesService.setHandleStyles(this.dragHandle);
+  }
+
+  private subscribeForEvents() {
+    this.eventsService.events()
+      .subscribe((e: DndEvent) => {
+        if (DndEvent.ITEMS_DROPPED === e) {
+          this.unregisterDragListener();
+          this.eventsService.endDrag();
+          this.removeClass(DndCss.DRAG_ACTIVE);
+        } else if (DndEvent.DRAG_STARTED === e) {
+          this.addClass(DndCss.DRAG);
+        } else if (DndEvent.DRAG_ENDED === e) {
+          this.removeClass(DndCss.DRAG);
+        }
+      });
   }
 
   private registerDragStartListener(): void {
@@ -83,14 +88,10 @@ export class DragDirective implements OnInit {
   }
 
   private startDrag(): void {
-    this.storeService.set({
-      el: this.dragHandle,
-      payload: this.data
-    });
-
-    this.eventsService.startDrag();
+    this.storeService.set(this.data);
     this.registerDragListeners();
-    this.stylesService.addClass(this.nativeElement, DndCss.DRAG_ACTIVE);
+    this.addClass(DndCss.DRAG_ACTIVE);
+    this.eventsService.startDrag();
   }
 
   private drag(position: Position): void {
@@ -99,8 +100,16 @@ export class DragDirective implements OnInit {
 
   private endDrag(): void {
     this.storeService.clear();
-    this.eventsService.endDrag();
-    this.stylesService.resetPosition(this.nativeElement);
     this.unregisterDragListener();
+    this.stylesService.resetPosition(this.nativeElement);
+    this.eventsService.endDrag();
+  }
+
+  private addClass(css: DndCss): void {
+    this.stylesService.addClass(this.nativeElement, css);
+  }
+
+  private removeClass(css: DndCss): void {
+    this.stylesService.addClass(this.nativeElement, css);
   }
 }
