@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {DndEvent} from '../types/DndEvents';
-import {filter} from "rxjs/operators";
+import {filter} from 'rxjs/operators';
 
 @Injectable()
 export class DndEventsService {
