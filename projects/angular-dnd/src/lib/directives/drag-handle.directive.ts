@@ -6,14 +6,16 @@ import {DragDirective} from './drag.directive';
 })
 export class DragHandleDirective implements OnInit {
 
-  constructor(private readonly el: ElementRef,
-              private dragDirective: DragDirective) {
+  private readonly nativeElement: HTMLElement;
 
+  constructor(el: ElementRef,
+              private dragDirective: DragDirective) {
+    this.nativeElement = el.nativeElement;
   }
 
   ngOnInit(): void {
     if (this.dragDirective) {
-      this.dragDirective.setDragHandle(this.el.nativeElement);
+      this.dragDirective.setDragHandle(this.nativeElement);
     }
   }
 
