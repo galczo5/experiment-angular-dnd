@@ -30,6 +30,15 @@ export class DndStylesService {
     this.renderer.setStyle(el, 'transform', `translateY(${position.y}px) translateX(${position.x}px)`);
   }
 
+  setSize(el: HTMLElement, width: number, height: number): void {
+    this.renderer.setStyle(el, 'width', width + 'px');
+    this.renderer.setStyle(el, 'height', height + 'px');
+  }
+
+  setCloneStyles(el: HTMLElement): void {
+    this.renderer.setStyle(el, 'pointer-events', 'none');
+  }
+
   resetPosition(el: HTMLElement): void {
     this.renderer.removeStyle(el, 'position');
     this.renderer.removeStyle(el, 'top');
