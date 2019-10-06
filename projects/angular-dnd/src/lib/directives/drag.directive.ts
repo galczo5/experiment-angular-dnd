@@ -1,4 +1,4 @@
-import {Directive, ElementRef, Inject, Input, NgZone, OnInit} from '@angular/core';
+import {Directive, ElementRef, EventEmitter, Inject, Input, NgZone, OnInit, Output} from '@angular/core';
 import {DndEventsService} from '../services/dnd-events.service';
 import {DndStoreService} from '../services/dnd-store.service';
 import {fromEvent, Subject, Subscription} from 'rxjs';
@@ -18,6 +18,12 @@ export class DragDirective implements OnInit {
 
   @Input('dndDrag')
   data: DragData;
+
+  @Output()
+  dragStarted: EventEmitter<void> = new EventEmitter<void>();
+
+  @Output()
+  dragEnded: EventEmitter<void> = new EventEmitter<void>();
 
   private dragHandle: HTMLElement;
   private dragStartListener: Subscription;
@@ -41,12 +47,14 @@ export class DragDirective implements OnInit {
   setDragHandle(handle: HTMLElement): void {
     if (this.dragStartListener) {
       this.stylesService.resetHandleStyles(this.dragHandle);
+      this.stylesService.removeClass(this.dragHandle, DndCss.DRAG_HANDLE);
       this.dragStartListener.unsubscribe();
     }
 
     this.dragHandle = handle;
     this.registerDragStartListener();
     this.stylesService.setHandleStyles(this.dragHandle);
+    this.stylesService.addClass(this.dragHandle, DndCss.DRAG_HANDLE);
   }
 
   private subscribeForEvents() {

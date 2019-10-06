@@ -15,6 +15,15 @@ export class DropDirective implements OnInit {
   @Output()
   dropped: EventEmitter<any> = new EventEmitter<any>();
 
+  @Output()
+  dragEnter: EventEmitter<any> = new EventEmitter<any>();
+
+  @Output()
+  dragOver: EventEmitter<any> = new EventEmitter<any>();
+
+  @Output()
+  dragLeave: EventEmitter<any> = new EventEmitter<any>();
+
   private drag$: Subject<void> = new Subject<void>();
   private readonly nativeElement: HTMLElement;
 
