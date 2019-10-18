@@ -8,7 +8,7 @@
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
 <style>
-  :host {
+  body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     font-size: 14px;
     color: #333;
@@ -351,8 +351,18 @@
 
   <!-- Resources -->
   <h2>Resources</h2>
+  <div [dndDrag]="'next-steps'">
+    <h2 style="display: inline-block">
+      Drag me
+    </h2>
+    <i>
+      <b dndDragHandle>HANDLE</b>
+    </i>
+  </div>
+
   <p>Here are some links to help you get started:</p>
 
+  <!-- Next Steps -->
   <div class="card-container">
     <a class="card" target="_blank" rel="noopener" href="https://angular.io/tutorial" [dndDrag]="'tutorial'">
       <svg class="material-icons" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
@@ -378,15 +388,6 @@
     </a>
 
   </div>
-
-  <!-- Next Steps -->
-  <h2 [dndDrag]="'next-steps'">
-    Next Steps
-
-    <i>
-      <b dndDragHandle>HANDLE</b>
-    </i>
-  </h2>
   <p>What do you want to do next with your app?</p>
 
   <input type="hidden" #selection>

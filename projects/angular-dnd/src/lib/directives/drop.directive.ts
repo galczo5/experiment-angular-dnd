@@ -49,22 +49,31 @@ export class DropDirective implements OnInit {
 
   private dragStart(): void {
     this.addClass(DndCss.DROP);
-    this.registerDragListeners();
+    this.registerListeners();
   }
 
   private dragEnd(): void {
     this.removeClass(DndCss.DROP);
     this.removeClass(DndCss.DROP_ACTIVE);
+    this.unregisterListeners();
+  }
+
+  private drop(): void {
+    const payload = this.storeService.get();
+    this.eventsService.itemsDropped();
+    this.dropped.emit(payload);
+  }
+
+  private unregisterListeners(): void {
     this.drag$.next();
   }
 
-  private registerDragListeners() {
+  private registerListeners(): void {
     fromEvent(this.nativeElement, 'mouseup')
       .pipe(takeUntil(this.drag$))
       .subscribe((event: MouseEvent) => {
         event.stopPropagation();
-        this.eventsService.itemsDropped();
-        this.dropped.emit(this.storeService.get().payload);
+        this.drop();
       });
 
     fromEvent(this.nativeElement, 'mouseenter')
@@ -81,6 +90,6 @@ export class DropDirective implements OnInit {
   }
 
   private removeClass(css: DndCss): void {
-    this.stylesService.addClass(this.nativeElement, css);
+    this.stylesService.removeClass(this.nativeElement, css);
   }
 }

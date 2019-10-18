@@ -10,6 +10,7 @@ import {DndEvent} from '../types/DndEvents';
 import {DndStylesService} from '../services/dnd-styles.service';
 import {DndCss} from '../types/DndCss';
 import {DragData} from '../types/DragData';
+import {DndCloneService} from '../services/dnd-clone.service';
 
 @Directive({
   selector: '[dndDrag]'
@@ -34,6 +35,7 @@ export class DragDirective implements OnInit {
               private readonly eventsService: DndEventsService,
               private readonly storeService: DndStoreService,
               private readonly stylesService: DndStylesService,
+              private readonly cloneService: DndCloneService,
               @Inject(DOCUMENT) private readonly document: Document,
               el: ElementRef) {
     this.nativeElement = el.nativeElement;
@@ -41,7 +43,6 @@ export class DragDirective implements OnInit {
 
   ngOnInit(): void {
     this.setDragHandle(this.nativeElement);
-    this.subscribeForEvents();
   }
 
   setDragHandle(handle: HTMLElement): void {
@@ -57,19 +58,10 @@ export class DragDirective implements OnInit {
     this.stylesService.addClass(this.dragHandle, DndCss.DRAG_HANDLE);
   }
 
-  private subscribeForEvents() {
-    this.eventsService.events()
-      .subscribe((e: DndEvent) => {
-        if (DndEvent.ITEMS_DROPPED === e) {
-          this.unregisterDragListener();
-          this.eventsService.endDrag();
-          this.removeClass(DndCss.DRAG_ACTIVE);
-        } else if (DndEvent.DRAG_STARTED === e) {
-          this.addClass(DndCss.DRAG);
-        } else if (DndEvent.DRAG_ENDED === e) {
-          this.removeClass(DndCss.DRAG);
-        }
-      });
+  private subscribeDroppedEvent() {
+    this.eventsService.filteredEvents(DndEvent.ITEMS_DROPPED)
+      .pipe(takeUntil(this.drag$))
+      .subscribe(() => this.endDrag());
   }
 
   private registerDragStartListener(): void {
@@ -97,27 +89,22 @@ export class DragDirective implements OnInit {
 
   private startDrag(): void {
     this.storeService.set(this.data);
+    this.cloneService.createClone(this.nativeElement);
+
     this.registerDragListeners();
-    this.addClass(DndCss.DRAG_ACTIVE);
     this.eventsService.startDrag();
+    this.subscribeDroppedEvent();
   }
 
   private drag(position: Position): void {
-    this.stylesService.setPosition(this.nativeElement, position);
+    this.cloneService.setPosition(position);
   }
 
   private endDrag(): void {
     this.storeService.clear();
+    this.cloneService.destroyClone();
+
     this.unregisterDragListener();
-    this.stylesService.resetPosition(this.nativeElement);
     this.eventsService.endDrag();
-  }
-
-  private addClass(css: DndCss): void {
-    this.stylesService.addClass(this.nativeElement, css);
-  }
-
-  private removeClass(css: DndCss): void {
-    this.stylesService.addClass(this.nativeElement, css);
   }
 }
