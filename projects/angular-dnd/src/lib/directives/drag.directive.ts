@@ -1,7 +1,7 @@
 import {Directive, ElementRef, EventEmitter, Inject, Input, NgZone, OnInit, Output} from '@angular/core';
 import {DndEventsService} from '../services/dnd-events.service';
 import {DndStoreService} from '../services/dnd-store.service';
-import {fromEvent, Subject, Subscription} from 'rxjs';
+import {fromEvent, Subject} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
 import {takeUntil} from 'rxjs/operators';
 import {Position} from '../types/Position';
@@ -11,6 +11,7 @@ import {DndStylesService} from '../services/dnd-styles.service';
 import {DndCss} from '../types/DndCss';
 import {DragData} from '../types/DragData';
 import {DndCloneService} from '../services/dnd-clone.service';
+import {DndHandle} from '../types/DndHandle';
 
 @Directive({
   selector: '[dndDrag]'
@@ -26,8 +27,9 @@ export class DragDirective implements OnInit {
   @Output()
   dragEnded: EventEmitter<void> = new EventEmitter<void>();
 
-  private dragHandle: HTMLElement;
-  private dragStartListener: Subscription;
+  private containerHandle: DndHandle;
+  private handles: Array<DndHandle> = [];
+
   private readonly nativeElement: HTMLElement;
   private readonly drag$: Subject<void> = new Subject<void>();
 
@@ -42,20 +44,30 @@ export class DragDirective implements OnInit {
   }
 
   ngOnInit(): void {
-    this.setDragHandle(this.nativeElement);
+    this.zone.runOutsideAngular(() => {
+      this.containerHandle = this.createDragHandle(this.nativeElement);
+    });
   }
 
   setDragHandle(handle: HTMLElement): void {
-    if (this.dragStartListener) {
-      this.stylesService.resetHandleStyles(this.dragHandle);
-      this.stylesService.removeClass(this.dragHandle, DndCss.DRAG_HANDLE);
-      this.dragStartListener.unsubscribe();
+    if (this.containerHandle) {
+      this.removeDragHandle(this.containerHandle);
+      this.containerHandle = null;
     }
 
-    this.dragHandle = handle;
-    this.registerDragStartListener();
-    this.stylesService.setHandleStyles(this.dragHandle);
-    this.stylesService.addClass(this.dragHandle, DndCss.DRAG_HANDLE);
+    this.zone.runOutsideAngular(() => {
+      const dragHandle = this.createDragHandle(handle);
+      this.handles.push(dragHandle);
+    });
+  }
+
+  private removeDragHandle(handle: DndHandle): void {
+    const el = handle.getElement();
+    const listener = handle.getListener();
+
+    this.stylesService.resetHandleStyles(el);
+    this.stylesService.removeClass(el, DndCss.DRAG_HANDLE);
+    listener.unsubscribe();
   }
 
   private subscribeDroppedEvent() {
@@ -64,11 +76,14 @@ export class DragDirective implements OnInit {
       .subscribe(() => this.endDrag());
   }
 
-  private registerDragStartListener(): void {
-    this.zone.runOutsideAngular(() => {
-      this.dragStartListener = fromEvent(this.dragHandle, 'mousedown')
+  private createDragHandle(handle: HTMLElement): DndHandle {
+      const listener = fromEvent(handle, 'mousedown')
         .subscribe(() => this.startDrag());
-    });
+
+      this.stylesService.setHandleStyles(handle);
+      this.stylesService.addClass(handle, DndCss.DRAG_HANDLE);
+
+      return new DndHandle(handle, listener);
   }
 
   private registerDragListeners(): void {

@@ -39,6 +39,10 @@ export class DndStylesService {
     this.renderer.setStyle(el, 'pointer-events', 'none');
   }
 
+  setCloneVisibility(el: HTMLElement, visible: boolean): void {
+    this.renderer.setStyle(el, 'opacity', visible ? '1' : '0');
+  }
+
   resetPosition(el: HTMLElement): void {
     this.renderer.removeStyle(el, 'position');
     this.renderer.removeStyle(el, 'top');
