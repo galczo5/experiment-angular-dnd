@@ -3,14 +3,15 @@ import {DOCUMENT} from '@angular/common';
 import {DndStylesService} from './dnd-styles.service';
 import {Position} from '../types/Position';
 import {DndCss} from '../types/DndCss';
+import {CloneState, DndClone} from '../types/DndClone';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DndCloneService {
 
-  private clone: HTMLElement;
   private readonly renderer: Renderer2;
+  private clone: DndClone;
 
   constructor(@Inject(DOCUMENT) private readonly document: Document,
               rendererFactory2: RendererFactory2,
@@ -19,22 +20,40 @@ export class DndCloneService {
   }
 
   createClone(el: HTMLElement): void {
-    const { width, height } = el.getBoundingClientRect();
-    this.clone = this.document.createElement('div');
+    const size = el.getBoundingClientRect();
+    const cloneEl = this.document.createElement('div');
+    this.clone = new DndClone(cloneEl, size);
 
-    this.stylesService.setCloneStyles(this.clone);
-    this.stylesService.setSize(this.clone, width, height);
-    this.stylesService.addClass(this.clone, DndCss.DRAG_ACTIVE);
+    this.setStyles();
 
-    this.clone.appendChild(el.cloneNode(true));
-    this.document.body.appendChild(this.clone);
+    cloneEl.appendChild(el.cloneNode(true));
+    this.document.body.appendChild(cloneEl);
   }
 
   setPosition(position: Position): void {
-    this.stylesService.setPosition(this.clone, position);
+    this.stylesService.setPosition(this.clone.getElement(), position);
+    this.setCloneVisibility();
   }
 
   destroyClone(): void {
-    this.clone.remove();
+    this.clone.getElement().remove();
+    this.clone.setState(CloneState.DESTROYED);
+  }
+
+  private setCloneVisibility(): void {
+    if (this.clone.getState() === CloneState.NEW) {
+      this.stylesService.setCloneVisibility(this.clone.getElement(), true);
+      this.clone.setState(CloneState.IN_USE);
+    }
+  }
+
+  private setStyles(): void {
+    const el = this.clone.getElement();
+    const size = this.clone.getSize();
+
+    this.stylesService.setCloneStyles(el);
+    this.stylesService.setCloneVisibility(el, false);
+    this.stylesService.setSize(el, size.width, size.height);
+    this.stylesService.addClass(el, DndCss.DRAG_ACTIVE);
   }
 }
