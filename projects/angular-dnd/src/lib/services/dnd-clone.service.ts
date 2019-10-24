@@ -19,12 +19,13 @@ export class DndCloneService {
     this.renderer = rendererFactory2.createRenderer(null, null);
   }
 
-  createClone(el: HTMLElement): void {
+  createClone(el: HTMLElement, position: Position): void {
     const size = el.getBoundingClientRect();
     const cloneEl = this.document.createElement('div');
     this.clone = new DndClone(cloneEl, size);
 
     this.setStyles();
+    this.setPosition(position);
 
     cloneEl.appendChild(el.cloneNode(true));
     this.document.body.appendChild(cloneEl);
@@ -32,7 +33,6 @@ export class DndCloneService {
 
   setPosition(position: Position): void {
     this.stylesService.setPosition(this.clone.getElement(), position);
-    this.setCloneVisibility();
   }
 
   destroyClone(): void {
@@ -40,19 +40,11 @@ export class DndCloneService {
     this.clone.setState(CloneState.DESTROYED);
   }
 
-  private setCloneVisibility(): void {
-    if (this.clone.getState() === CloneState.NEW) {
-      this.stylesService.setCloneVisibility(this.clone.getElement(), true);
-      this.clone.setState(CloneState.IN_USE);
-    }
-  }
-
   private setStyles(): void {
     const el = this.clone.getElement();
     const size = this.clone.getSize();
 
     this.stylesService.setCloneStyles(el);
-    this.stylesService.setCloneVisibility(el, false);
     this.stylesService.setSize(el, size.width, size.height);
     this.stylesService.addClass(el, DndCss.DRAG_ACTIVE);
   }

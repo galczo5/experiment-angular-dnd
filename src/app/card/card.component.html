@@ -1,0 +1,25 @@
+<div class="alert alert-light"
+     [dndDrag]="card">
+  <div class="row mb-2">
+    <div class="col">
+      <i dndDragHandle class="fas fa-grip-vertical mr-2"></i>
+      <strong>{{ card.title }}</strong>
+    </div>
+    <div class="col-auto">
+      <i class="card-star fa-star text-secondary cursor-pointer"
+         (click)="toggle()"
+         [class.fas]="card.stared"
+         [class.far]="!card.stared"
+         [class.text-warning]="card.stared"></i>
+    </div>
+  </div>
+
+  {{ card.description }}
+
+  <div class="mt-2">
+    <span class="badge badge-info mr-1"
+          *ngFor="let tag of card.tags">
+      {{ tag }}
+    </span>
+  </div>
+</div>
