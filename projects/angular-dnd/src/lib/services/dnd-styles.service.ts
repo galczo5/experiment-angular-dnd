@@ -1,6 +1,7 @@
 import {Injectable, Renderer2, RendererFactory2} from '@angular/core';
 import {Position} from '../types/Position';
 import {DndCss} from '../types/DndCss';
+import {Size} from '../types/Size';
 
 @Injectable({
   providedIn: 'root'
@@ -39,11 +40,12 @@ export class DndStylesService {
     this.renderer.setStyle(el, 'pointer-events', 'none');
   }
 
-  resetPosition(el: HTMLElement): void {
-    this.renderer.removeStyle(el, 'position');
-    this.renderer.removeStyle(el, 'top');
-    this.renderer.removeStyle(el, 'left');
-    this.renderer.removeStyle(el, 'transform');
+  setCoverStyles(el: HTMLElement, size: Size, position: Position): void {
+    this.renderer.setStyle(el, 'position', 'absolute');
+    this.renderer.setStyle(el, 'width', size.width + 'px');
+    this.renderer.setStyle(el, 'height', size.height + 'px');
+    this.renderer.setStyle(el, 'top', position.y + 'px');
+    this.renderer.setStyle(el, 'left', position.x + 'px');
   }
 
   addClass(el: HTMLElement, css: DndCss): void {
