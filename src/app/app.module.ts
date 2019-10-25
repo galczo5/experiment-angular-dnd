@@ -3,10 +3,14 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { AngularDndModule } from '../../projects/angular-dnd/src/lib/angular-dnd.module';
+import { CardComponent } from './card/card.component';
+import { CardContainerComponent } from './card-container/card-container.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    CardComponent,
+    CardContainerComponent
   ],
   imports: [
     BrowserModule,

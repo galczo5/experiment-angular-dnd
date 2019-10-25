@@ -1,0 +1,7 @@
+:host {
+  transition: all .2s;
+}
+
+.card-star {
+  transition: color .5s;
+}

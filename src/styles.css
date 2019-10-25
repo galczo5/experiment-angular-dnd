@@ -1,17 +1,40 @@
 /* You can add global styles to this file, and also import other style files */
 
 .dnd-drag {
-  background: green;
+  animation: dragFadeOut .5s forwards;
+}
+
+@keyframes dragFadeOut {
+  50% {
+    opacity: .3;
+    height: initial;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  100% {
+    height: 0;
+    opacity: 0;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 .dnd-drag-active {
-  background: blue;
+
 }
 
 .dnd-drop {
-  background: coral;
+  border-radius: 0.25rem;
+  background-color: #ecf0f1;
+  opacity: .7;
+  transition: all .2s;
 }
 
 .dnd-drop-active {
-  background: red;
+  opacity: 1;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }

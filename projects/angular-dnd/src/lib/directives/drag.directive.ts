@@ -78,7 +78,7 @@ export class DragDirective implements OnInit {
 
   private createDragHandle(handle: HTMLElement): DndHandle {
       const listener = fromEvent(handle, 'mousedown')
-        .subscribe(() => this.startDrag());
+        .subscribe((event: MouseEvent) => this.startDrag(event));
 
       this.stylesService.setHandleStyles(handle);
       this.stylesService.addClass(handle, DndCss.DRAG_HANDLE);
@@ -102,9 +102,10 @@ export class DragDirective implements OnInit {
     this.drag$.next();
   }
 
-  private startDrag(): void {
+  private startDrag(position: Position): void {
     this.storeService.set(this.data);
-    this.cloneService.createClone(this.nativeElement);
+    this.cloneService.createClone(this.nativeElement, position);
+    this.stylesService.addClass(this.nativeElement, DndCss.DRAG);
 
     this.registerDragListeners();
     this.eventsService.startDrag();
@@ -118,6 +119,7 @@ export class DragDirective implements OnInit {
   private endDrag(): void {
     this.storeService.clear();
     this.cloneService.destroyClone();
+    this.stylesService.removeClass(this.nativeElement, DndCss.DRAG);
 
     this.unregisterDragListener();
     this.eventsService.endDrag();
