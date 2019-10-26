@@ -1,16 +1,23 @@
-import {Directive, ElementRef, EventEmitter, NgZone, OnInit, Output, Renderer2} from '@angular/core';
+import {Directive, ElementRef, EventEmitter, Input, NgZone, OnInit, Output, Renderer2} from '@angular/core';
 import {DndEventsService} from '../services/dnd-events.service';
 import {DndStoreService} from '../services/dnd-store.service';
 import {DndEvent} from '../types/DndEvents';
 import {fromEvent, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {filter, takeUntil} from 'rxjs/operators';
 import {DndStylesService} from '../services/dnd-styles.service';
 import {DndCss} from '../types/DndCss';
+import {DndDropCoverFactoryService} from '../services/dnd-drop-cover-factory.service';
 
 @Directive({
   selector: '[dndDrop]'
 })
 export class DropDirective implements OnInit {
+
+  @Input('dndDrop')
+  enabled: boolean | string = true;
+
+  @Input('dndCover')
+  cover: boolean | string;
 
   @Output()
   dropped: EventEmitter<any> = new EventEmitter<any>();
@@ -25,19 +32,23 @@ export class DropDirective implements OnInit {
   dragLeave: EventEmitter<any> = new EventEmitter<any>();
 
   private drag$: Subject<void> = new Subject<void>();
-  private readonly nativeElement: HTMLElement;
+  private coverElement: HTMLElement;
 
   constructor(private readonly renderer: Renderer2,
               private readonly zone: NgZone,
               private readonly eventsService: DndEventsService,
               private readonly storeService: DndStoreService,
               private readonly stylesService: DndStylesService,
-              el: ElementRef) {
-    this.nativeElement = el.nativeElement;
+              private readonly coverFactoryService: DndDropCoverFactoryService,
+              private readonly el: ElementRef) {
+    this.coverElement = el.nativeElement;
   }
 
   ngOnInit(): void {
     this.eventsService.events()
+      .pipe(
+        filter(() => this.dropEnabled())
+      )
       .subscribe((event: DndEvent) => {
         if (event === DndEvent.DRAG_STARTED) {
           this.dragStart();
@@ -48,11 +59,19 @@ export class DropDirective implements OnInit {
   }
 
   private dragStart(): void {
+    if (this.coverEnabled()) {
+      this.createCover();
+    }
+
     this.addClass(DndCss.DROP);
     this.registerListeners();
   }
 
   private dragEnd(): void {
+    if (this.coverEnabled()) {
+      this.destroyCover();
+    }
+
     this.removeClass(DndCss.DROP);
     this.removeClass(DndCss.DROP_ACTIVE);
     this.unregisterListeners();
@@ -69,27 +88,43 @@ export class DropDirective implements OnInit {
   }
 
   private registerListeners(): void {
-    fromEvent(this.nativeElement, 'mouseup')
+    fromEvent(this.coverElement, 'mouseup')
       .pipe(takeUntil(this.drag$))
       .subscribe((event: MouseEvent) => {
         event.stopPropagation();
         this.drop();
       });
 
-    fromEvent(this.nativeElement, 'mouseenter')
+    fromEvent(this.coverElement, 'mouseenter')
       .pipe(takeUntil(this.drag$))
       .subscribe(() => this.addClass(DndCss.DROP_ACTIVE));
 
-    fromEvent(this.nativeElement, 'mouseleave')
+    fromEvent(this.coverElement, 'mouseleave')
       .pipe(takeUntil(this.drag$))
       .subscribe(() => this.removeClass(DndCss.DROP_ACTIVE));
   }
 
+  private dropEnabled(): boolean {
+    return !!this.enabled || this.enabled === '';
+  }
+
+  private coverEnabled(): boolean {
+    return !!this.cover || this.cover === '';
+  }
+
+  private createCover(): void {
+    this.coverElement = this.coverFactoryService.createCover(this.el.nativeElement);
+  }
+
+  private destroyCover(): void {
+    this.coverFactoryService.destroyCover(this.coverElement);
+  }
+
   private addClass(css: DndCss): void {
-    this.stylesService.addClass(this.nativeElement, css);
+    this.stylesService.addClass(this.coverElement, css);
   }
 
   private removeClass(css: DndCss): void {
-    this.stylesService.removeClass(this.nativeElement, css);
+    this.stylesService.removeClass(this.coverElement, css);
   }
 }

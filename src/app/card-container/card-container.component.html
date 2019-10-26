@@ -2,7 +2,8 @@
   {{ status }}
 </label>
 <div class="mt-2"
-     dndDrop
+     [dndDrop]="cards.length > 0"
+     dndCover
      (dropped)="onDrop($event)">
   <app-card *ngFor="let card of cards"
             [card]="card">

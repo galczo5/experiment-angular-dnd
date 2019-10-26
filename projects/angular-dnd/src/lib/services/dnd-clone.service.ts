@@ -1,4 +1,4 @@
-import {Inject, Injectable, Renderer2, RendererFactory2} from '@angular/core';
+import {Inject, Injectable, Renderer2} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {DndStylesService} from './dnd-styles.service';
 import {Position} from '../types/Position';
@@ -10,13 +10,10 @@ import {CloneState, DndClone} from '../types/DndClone';
 })
 export class DndCloneService {
 
-  private readonly renderer: Renderer2;
   private clone: DndClone;
 
   constructor(@Inject(DOCUMENT) private readonly document: Document,
-              rendererFactory2: RendererFactory2,
               private readonly stylesService: DndStylesService) {
-    this.renderer = rendererFactory2.createRenderer(null, null);
   }
 
   createClone(el: HTMLElement, position: Position): void {
