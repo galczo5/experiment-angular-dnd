@@ -1,32 +1,35 @@
 import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
-import {DndEvent} from '../types/DndEvents';
-import {filter} from 'rxjs/operators';
+import {DragGroup} from '../types/DragGroup';
 
 @Injectable()
 export class DndEventsService {
 
-  private readonly events$: Subject<DndEvent> = new Subject<DndEvent>();
+  private readonly dragStart$: Subject<DragGroup> = new Subject<DragGroup>();
+  private readonly dragEnd$: Subject<DragGroup> = new Subject<DragGroup>();
+  private readonly drop$: Subject<DragGroup> = new Subject<DragGroup>();
 
-  constructor() { }
-
-  startDrag(): void {
-    this.events$.next(DndEvent.DRAG_STARTED);
+  startDrag(group: DragGroup): void {
+    this.dragStart$.next(group);
   }
 
-  endDrag(): void {
-    this.events$.next(DndEvent.DRAG_ENDED);
+  endDrag(group: DragGroup): void {
+    this.dragEnd$.next(group);
   }
 
-  itemsDropped(): void {
-    this.events$.next(DndEvent.ITEMS_DROPPED);
+  drop(group: DragGroup): void {
+    this.drop$.next(group);
   }
 
-  events(): Observable<DndEvent> {
-    return this.events$.asObservable();
+  dragStarted(): Observable<DragGroup> {
+    return this.dragStart$.asObservable();
   }
 
-  filteredEvents(event: DndEvent): Observable<DndEvent> {
-    return this.events$.pipe(filter(e => e === event));
+  dragEnded(): Observable<DragGroup> {
+    return this.dragEnd$.asObservable();
+  }
+
+  dropped(): Observable<DragGroup> {
+    return this.drop$.asObservable();
   }
 }

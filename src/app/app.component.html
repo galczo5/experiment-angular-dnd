@@ -4,18 +4,10 @@
     Angular Drag and Drop
   </h1>
 
-  <div class="row mt-5">
-    <div class="col">
-      <app-card-container [status]="CardStatus.TODO">
-      </app-card-container>
-    </div>
-    <div class="col">
-      <app-card-container [status]="CardStatus.IN_PROGRESS">
-      </app-card-container>
-    </div>
-    <div class="col">
-      <app-card-container [status]="CardStatus.DONE">
-      </app-card-container>
-    </div>
-  </div>
+  <h2 class="mt-5">Cards</h2>
+  <app-table></app-table>
+
+  <h2 class="mt-5">Lists</h2>
+  <app-list></app-list>
+
 </div>

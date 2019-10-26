@@ -2,6 +2,8 @@ import {Inject, Injectable} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {DndStylesService} from './dnd-styles.service';
 
+declare var window: Window;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,8 +18,8 @@ export class DndDropCoverFactoryService {
     const rect = el.getBoundingClientRect();
 
     this.stylesService.setCoverStyles(coverEl, rect, {
-      y: rect.top,
-      x: rect.left
+      y: rect.top + window.scrollY,
+      x: rect.left + window.scrollX
     });
 
     this.document.body.appendChild(coverEl);

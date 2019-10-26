@@ -1,0 +1,21 @@
+<div class="alert alert-light my-0"
+     dndGroup="list"
+     [dndDrag]="item">
+  <div class="row">
+    <div class="col-auto">
+      <i dndDragHandle class="fas fa-grip-vertical mr-2"></i>
+      <strong>
+        {{ item.name }}
+      </strong>
+    </div>
+    <div class="col pl-0">
+      {{ item.description }}
+    </div>
+    <div class="col-auto">
+    <span class="badge badge-info ml-1"
+          *ngFor="let tag of item.tags">
+      {{ tag }}
+    </span>
+    </div>
+  </div>
+</div>

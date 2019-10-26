@@ -1,0 +1,16 @@
+<ng-container *ngFor="let item of items; let index = index;" >
+  <div *ngIf="index === 0"
+       class="mb-1"
+       dndDrop
+       dndGroup="list"
+       (dropped)="onDrop($event, index)">
+  </div>
+  <div class="mb-1">
+    <app-list-item [item]="item"></app-list-item>
+  </div>
+  <div class="mb-1"
+       dndDrop
+       dndGroup="list"
+       (dropped)="onDrop($event, index + 1)">
+  </div>
+</ng-container>

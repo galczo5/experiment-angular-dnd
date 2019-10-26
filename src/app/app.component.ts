@@ -1,5 +1,4 @@
 import {Component} from '@angular/core';
-import {Card, CardStatus} from './card/card';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +6,4 @@ import {Card, CardStatus} from './card/card';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-
-  CardStatus = CardStatus;
-
 }
