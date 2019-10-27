@@ -48,11 +48,11 @@ export class DndStylesService {
     this.renderer.setStyle(el, 'left', position.x + 'px');
   }
 
-  addClass(el: HTMLElement, css: DndCss): void {
+  addClass(el: HTMLElement, css: DndCss | string): void {
     this.renderer.addClass(el, css);
   }
 
-  removeClass(el: HTMLElement, css: DndCss): void {
+  removeClass(el: HTMLElement, css: DndCss | string): void {
     this.renderer.removeClass(el, css);
   }
 }

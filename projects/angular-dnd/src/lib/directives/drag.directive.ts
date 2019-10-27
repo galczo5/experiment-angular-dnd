@@ -3,15 +3,15 @@ import {DndEventsService} from '../services/dnd-events.service';
 import {DndStoreService} from '../services/dnd-store.service';
 import {fromEvent, Subject} from 'rxjs';
 import {DOCUMENT} from '@angular/common';
-import {takeUntil} from 'rxjs/operators';
+import {filter, takeUntil} from 'rxjs/operators';
 import {Position} from '../types/Position';
 
-import {DndEvent} from '../types/DndEvents';
 import {DndStylesService} from '../services/dnd-styles.service';
 import {DndCss} from '../types/DndCss';
 import {DragData} from '../types/DragData';
 import {DndCloneService} from '../services/dnd-clone.service';
 import {DndHandle} from '../types/DndHandle';
+import {DragGroup} from '../types/DragGroup';
 
 @Directive({
   selector: '[dndDrag]'
@@ -20,6 +20,9 @@ export class DragDirective implements OnInit {
 
   @Input('dndDrag')
   data: DragData;
+
+  @Input('dndGroup')
+  group: DragGroup;
 
   @Output()
   dragStarted: EventEmitter<void> = new EventEmitter<void>();
@@ -71,8 +74,11 @@ export class DragDirective implements OnInit {
   }
 
   private subscribeDroppedEvent() {
-    this.eventsService.filteredEvents(DndEvent.ITEMS_DROPPED)
-      .pipe(takeUntil(this.drag$))
+    this.eventsService.dropped()
+      .pipe(
+        filter(g => g === this.group),
+        takeUntil(this.drag$)
+      )
       .subscribe(() => this.endDrag());
   }
 
@@ -108,7 +114,7 @@ export class DragDirective implements OnInit {
     this.stylesService.addClass(this.nativeElement, DndCss.DRAG);
 
     this.registerDragListeners();
-    this.eventsService.startDrag();
+    this.eventsService.startDrag(this.group);
     this.subscribeDroppedEvent();
   }
 
@@ -122,6 +128,6 @@ export class DragDirective implements OnInit {
     this.stylesService.removeClass(this.nativeElement, DndCss.DRAG);
 
     this.unregisterDragListener();
-    this.eventsService.endDrag();
+    this.eventsService.endDrag(this.group);
   }
 }

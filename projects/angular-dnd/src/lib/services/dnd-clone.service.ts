@@ -1,9 +1,11 @@
-import {Inject, Injectable, Renderer2} from '@angular/core';
+import {Inject, Injectable} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {DndStylesService} from './dnd-styles.service';
 import {Position} from '../types/Position';
 import {DndCss} from '../types/DndCss';
 import {CloneState, DndClone} from '../types/DndClone';
+
+declare var window: Window;
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +31,10 @@ export class DndCloneService {
   }
 
   setPosition(position: Position): void {
-    this.stylesService.setPosition(this.clone.getElement(), position);
+    this.stylesService.setPosition(this.clone.getElement(), {
+      y: position.y + window.scrollY,
+      x: position.x + window.scrollX
+    });
   }
 
   destroyClone(): void {

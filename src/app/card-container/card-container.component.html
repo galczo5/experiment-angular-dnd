@@ -4,6 +4,7 @@
 <div class="mt-2"
      [dndDrop]="cards.length > 0"
      dndCover
+     dndGroup="card"
      (dropped)="onDrop($event)">
   <app-card *ngFor="let card of cards"
             [card]="card">
@@ -13,5 +14,6 @@
 <div *ngIf="cards.length === 0"
      style="min-height: 50px;"
      dndDrop
+     dndGroup="card"
      (dropped)="onDrop($event)">
 </div>
