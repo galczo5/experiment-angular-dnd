@@ -6,16 +6,17 @@ node_js:
   - "10"
 
 cache:
+  yarn: true
   directories:
     - ./node_modules
 
 install:
-  - npm install
+  - yarn install
 
 script:
-  - npm run-script lint
-  - npm run-script test-headless
-  - npm run-script build -- --prod --base-href "/angular-dnd/"
+  - yarn lint
+  - yarn test-headless
+  - yarn build -- --prod --base-href "/angular-dnd/"
 
 deploy:
   provider: pages
