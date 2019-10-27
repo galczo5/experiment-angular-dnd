@@ -15,14 +15,6 @@ export class DndStoreService {
     this.value$.next(this.value);
   }
 
-  get(): DragData {
-    return this.value;
-  }
-
-  clear(): void {
-    this.set(null);
-  }
-
   values(): Observable<DragData> {
     return this.value$.asObservable();
   }

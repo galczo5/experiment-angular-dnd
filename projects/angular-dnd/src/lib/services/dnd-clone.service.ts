@@ -4,6 +4,7 @@ import {DndStylesService} from './dnd-styles.service';
 import {Position} from '../types/Position';
 import {DndCss} from '../types/DndCss';
 import {CloneState, DndClone} from '../types/DndClone';
+import {DragGroup} from '../types/DragGroup';
 
 declare var window: Window;
 
@@ -13,15 +14,18 @@ declare var window: Window;
 export class DndCloneService {
 
   private clone: DndClone;
+  private group: DragGroup;
 
   constructor(@Inject(DOCUMENT) private readonly document: Document,
               private readonly stylesService: DndStylesService) {
   }
 
-  createClone(el: HTMLElement, position: Position): void {
+  createClone(el: HTMLElement, position: Position, group: DragGroup): void {
     const size = el.getBoundingClientRect();
     const cloneEl = this.document.createElement('div');
+
     this.clone = new DndClone(cloneEl, size);
+    this.group = group;
 
     this.setStyles();
     this.setPosition(position);
@@ -49,5 +53,10 @@ export class DndCloneService {
     this.stylesService.setCloneStyles(el);
     this.stylesService.setSize(el, size.width, size.height);
     this.stylesService.addClass(el, DndCss.DRAG_ACTIVE);
+    this.stylesService.addClass(el, this.getGroupClassName());
+  }
+
+  private getGroupClassName(): string {
+    return DndCss.DRAG_ACTIVE + '-' + this.group;
   }
 }
