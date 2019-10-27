@@ -20,7 +20,7 @@ script:
 
 deploy:
   provider: pages
-  skip_cleanup: false
+  skip_cleanup: true
   github_token: $GITHUB_TOKEN
   local_dir: dist/dnd-app
   on:
