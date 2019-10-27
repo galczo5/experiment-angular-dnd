@@ -7,6 +7,8 @@ import {DndStylesService} from '../services/dnd-styles.service';
 import {DndCss} from '../types/DndCss';
 import {DndDropCoverFactoryService} from '../services/dnd-drop-cover-factory.service';
 import {DragGroup} from '../types/DragGroup';
+import {InputUtil} from '../util/input-util';
+import {DragData} from '../types/DragData';
 
 @Directive({
   selector: '[dndDrop]'
@@ -23,19 +25,21 @@ export class DropDirective implements OnInit {
   cover: boolean | string;
 
   @Output()
-  dropped: EventEmitter<any> = new EventEmitter<any>();
+  dropped: EventEmitter<DragData> = new EventEmitter<DragData>();
 
   @Output()
-  dragEnter: EventEmitter<any> = new EventEmitter<any>();
+  dragEntered: EventEmitter<DragData> = new EventEmitter<DragData>();
 
   @Output()
-  dragOver: EventEmitter<any> = new EventEmitter<any>();
+  draggedOver: EventEmitter<DragData> = new EventEmitter<DragData>();
 
   @Output()
-  dragLeave: EventEmitter<any> = new EventEmitter<any>();
+  dragLeft: EventEmitter<DragData> = new EventEmitter<DragData>();
 
+  private dragData: DragData;
   private drag$: Subject<void> = new Subject<void>();
   private coverElement: HTMLElement;
+  private readonly nativeElement: HTMLElement;
 
   constructor(private readonly renderer: Renderer2,
               private readonly zone: NgZone,
@@ -43,49 +47,52 @@ export class DropDirective implements OnInit {
               private readonly storeService: DndStoreService,
               private readonly stylesService: DndStylesService,
               private readonly coverFactoryService: DndDropCoverFactoryService,
-              private readonly el: ElementRef) {
-    this.coverElement = el.nativeElement;
+              private el: ElementRef) {
+    this.nativeElement = el.nativeElement;
   }
 
   ngOnInit(): void {
     this.eventsService.dragStarted()
-      .pipe(filter(g => this.dropEnabled() && g === this.group))
+      .pipe(filter(g => InputUtil.isEnabled(this.enabled) && g === this.group))
       .subscribe(() => this.dragStart());
 
     this.eventsService.dragEnded()
-      .pipe(filter(g => this.dropEnabled() && g === this.group))
+      .pipe(filter(g => InputUtil.isEnabled(this.enabled) && g === this.group))
       .subscribe(() => this.dragEnd());
+
+    this.storeService.values()
+      .subscribe(data => this.dragData = data);
   }
 
   private dragStart(): void {
-    if (this.coverEnabled()) {
-      this.createCover();
-    }
-
-    this.addClass(DndCss.DROP);
-    this.addClass(this.getGroupClassName());
+    this.createCover();
+    this.setDropStyles();
     this.registerListeners();
   }
 
   private dragEnd(): void {
-    if (this.coverEnabled()) {
-      this.destroyCover();
-    }
-
-    this.removeClass(DndCss.DROP);
-    this.removeClass(DndCss.DROP_ACTIVE);
-    this.removeClass(this.getGroupClassName());
+    this.destroyCover();
+    this.removeDropStyles();
     this.unregisterListeners();
   }
 
   private drop(): void {
-    const payload = this.storeService.get();
     this.eventsService.drop(this.group);
-    this.dropped.emit(payload);
+    this.dropped.emit(this.dragData);
   }
 
-  private unregisterListeners(): void {
-    this.drag$.next();
+  private dragEnter(): void {
+    this.addClass(DndCss.DROP_ACTIVE);
+    this.dragEntered.emit(this.dragData);
+  }
+
+  private dragLeave(): void {
+    this.removeClass(DndCss.DROP_ACTIVE);
+    this.dragLeft.emit(this.dragData);
+  }
+
+  private mouseOver(): void {
+    this.draggedOver.emit(this.dragData);
   }
 
   private registerListeners(): void {
@@ -98,31 +105,50 @@ export class DropDirective implements OnInit {
 
     fromEvent(this.coverElement, 'mouseenter')
       .pipe(takeUntil(this.drag$))
-      .subscribe(() => this.addClass(DndCss.DROP_ACTIVE));
+      .subscribe(() => this.dragEnter());
+
+    fromEvent(this.coverElement, 'mouseover')
+      .pipe(takeUntil(this.drag$))
+      .subscribe(() => this.mouseOver());
 
     fromEvent(this.coverElement, 'mouseleave')
       .pipe(takeUntil(this.drag$))
-      .subscribe(() => this.removeClass(DndCss.DROP_ACTIVE));
+      .subscribe(() => this.dragLeave());
+  }
+
+  private unregisterListeners(): void {
+    this.drag$.next();
   }
 
   private getGroupClassName(): string {
     return DndCss.DROP + '-' + this.group;
   }
 
-  private dropEnabled(): boolean {
-    return !!this.enabled || this.enabled === '';
-  }
-
-  private coverEnabled(): boolean {
-    return !!this.cover || this.cover === '';
-  }
-
   private createCover(): void {
-    this.coverElement = this.coverFactoryService.createCover(this.el.nativeElement);
+    if (InputUtil.isEnabled(this.cover)) {
+      this.coverElement = this.coverFactoryService.createCover(this.el.nativeElement);
+    } else {
+      this.coverElement = this.el.nativeElement;
+    }
   }
 
   private destroyCover(): void {
+    if (!InputUtil.isEnabled(this.cover)) {
+      return;
+    }
+
     this.coverFactoryService.destroyCover(this.coverElement);
+  }
+
+  private setDropStyles() {
+    this.addClass(DndCss.DROP);
+    this.addClass(this.getGroupClassName());
+  }
+
+  private removeDropStyles() {
+    this.removeClass(DndCss.DROP);
+    this.removeClass(DndCss.DROP_ACTIVE);
+    this.removeClass(this.getGroupClassName());
   }
 
   private addClass(css: DndCss | string): void {
