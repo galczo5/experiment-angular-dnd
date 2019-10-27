@@ -16,3 +16,11 @@ script:
   - npm run-script lint
   - npm run-script test-headless
   - npm run-script build --prod
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  local_dir: dist/dnd-app
+  on:
+    branch: master
