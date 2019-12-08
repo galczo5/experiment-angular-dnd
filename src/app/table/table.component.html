@@ -1,14 +1,17 @@
 <div class="row">
   <div class="col">
-    <app-card-container [status]="CardStatus.TODO">
+    <app-card-container [status]="CardStatus.TODO"
+                        [header]="headers">
     </app-card-container>
   </div>
   <div class="col">
-    <app-card-container [status]="CardStatus.IN_PROGRESS">
+    <app-card-container [status]="CardStatus.IN_PROGRESS"
+                        [header]="headers">
     </app-card-container>
   </div>
   <div class="col">
-    <app-card-container [status]="CardStatus.DONE">
+    <app-card-container [status]="CardStatus.DONE"
+                        [header]="headers">
     </app-card-container>
   </div>
 </div>

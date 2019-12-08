@@ -12,6 +12,9 @@ export class CardContainerComponent implements OnInit {
   @Input()
   status: CardStatus;
 
+  @Input()
+  header = true;
+
   cards: Array<Card> = [];
 
   constructor(private cardsServiceService: CardsService,

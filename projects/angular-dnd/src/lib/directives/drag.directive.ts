@@ -23,7 +23,7 @@ export class DragDirective {
   enabled: boolean | string = true;
 
   @Input('dndDrag')
-  data: DragData;
+  data: DragData = null;
 
   @Input('dndGroup')
   group: DragGroup;
@@ -34,7 +34,7 @@ export class DragDirective {
   @Output()
   dragEnded: EventEmitter<void> = new EventEmitter<void>();
 
-  private handles: Array<DndHandle> = [];
+  private readonly handles: Array<DndHandle> = [];
 
   private readonly nativeElement: HTMLElement;
   private readonly drag$: Subject<void> = new Subject<void>();
@@ -44,7 +44,7 @@ export class DragDirective {
               private readonly storeService: DndStoreService,
               private readonly stylesService: DndStylesService,
               private readonly cloneService: DndCloneService,
-              @Inject(DOCUMENT) private readonly document: Document,
+              @Inject(DOCUMENT) private readonly document: any,
               el: ElementRef) {
     this.nativeElement = el.nativeElement;
   }

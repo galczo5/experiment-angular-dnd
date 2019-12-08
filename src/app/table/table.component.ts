@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {CardStatus} from '../card/card';
 
 @Component({
@@ -7,6 +7,9 @@ import {CardStatus} from '../card/card';
   styleUrls: ['./table.component.css']
 })
 export class TableComponent {
+
+  @Input()
+  headers = true;
 
   CardStatus = CardStatus;
 

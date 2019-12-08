@@ -1,6 +1,7 @@
 {
-  "name": "angular-dnd",
+  "name": "easy-angular-dnd",
   "version": "0.0.1",
+  "private": false,
   "peerDependencies": {
     "@angular/common": "^8.2.8",
     "@angular/core": "^8.2.8"

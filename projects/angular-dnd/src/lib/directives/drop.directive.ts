@@ -22,7 +22,7 @@ export class DropDirective implements OnInit {
   group: DragGroup;
 
   @Input('dndCover')
-  cover: boolean | string;
+  cover: boolean | string = false;
 
   @Output()
   dropped: EventEmitter<DragData> = new EventEmitter<DragData>();

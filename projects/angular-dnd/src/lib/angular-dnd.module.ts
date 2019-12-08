@@ -6,6 +6,7 @@ import {DropDirective} from './directives/drop.directive';
 import {DragHandleDirective} from './directives/drag-handle.directive';
 import {DragDirective} from './directives/drag.directive';
 import {DndEventsService} from './services/dnd-events.service';
+import {DndDropCoverFactoryService} from './services/dnd-drop-cover-factory.service';
 
 @NgModule({
   declarations: [DragDirective, DropDirective, DragHandleDirective],
@@ -15,7 +16,8 @@ import {DndEventsService} from './services/dnd-events.service';
   ],
   providers: [
     DndStoreService,
-    DndEventsService
+    DndEventsService,
+    DndDropCoverFactoryService,
   ],
   exports: [
     DragDirective,

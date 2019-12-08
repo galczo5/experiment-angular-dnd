@@ -16,7 +16,7 @@ export class DndCloneService {
   private clone: DndClone;
   private group: DragGroup;
 
-  constructor(@Inject(DOCUMENT) private readonly document: Document,
+  constructor(@Inject(DOCUMENT) private readonly document: any,
               private readonly stylesService: DndStylesService) {
   }
 

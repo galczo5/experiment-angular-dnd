@@ -1,13 +1,101 @@
 <div class="container py-5">
-  <h1>
-    <i class="fas fa-hat-wizard mr-3"></i>
-    Angular Drag and Drop
-  </h1>
+  <div>
+      <h2>
+        Easy Angular DnD // <a href="https://github.com/galczo5/angular-dnd">galczo5/angular-dnd</a>
+      </h2>
+  </div>
 
-  <h2 class="mt-5">Cards</h2>
-  <app-table></app-table>
+  <div class="my-5">
+    <app-table [headers]="false"></app-table>
+  </div>
 
-  <h2 class="mt-5">Lists</h2>
-  <app-list></app-list>
+  <hr>
+  <p>
+    Easy Angular DnD is easy to use drag and drop library for Angular.
+    <br>
+    It provides maximum features with minimal dependencies.
+    In fact angular is the only dependency of this package.
 
+    <br><br>
+    Easy Angular DnD is open source and free to use. It always will be. <br>
+    For source code go to github page <a href="http://github.com/galczo5/angular-dnd">here</a>. <i class="fab fa-github ml-1"></i>
+  </p>
+  <p>
+    Check out <code>Examples</code> for short demo of possible usage.
+    In <code>Tips and tricks</code> you can find useful information that you can use to solve your problems.
+  </p>
+  <hr class="mb-5">
+
+  <app-doc-section header="Installation">
+    <p>
+      Easy Angular DnD can be installed via npm or yarn.
+    </p>
+    <p>
+      <strong>NPM</strong><br>
+      <code>npm install easy-angular-dnd</code>
+    </p>
+    <p>
+      <strong>YARN</strong><br>
+      <code>yarn add easy-angular-dnd</code>
+    </p>
+  </app-doc-section>
+  <app-doc-section header="Usage"></app-doc-section>
+  <app-doc-api></app-doc-api>
+
+  <app-doc-section header="Styling">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Class</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>dnd-drag</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>dnd-drag-active</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>dnd-drop</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>dnd-drag-active</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>dnd-drag-handle</td>
+        <td></td>
+      </tr>
+      </tbody>
+    </table>
+  </app-doc-section>
+  <app-doc-section header="Examples">
+    <app-table [headers]="true"></app-table>
+    <div class="mt-5">
+      <app-list></app-list>
+    </div>
+  </app-doc-section>
+  <app-doc-section header="Tips and tricks">
+    <h5>Multi drag and drop</h5>
+    <h5>Draggable block</h5>
+    <h5>Events</h5>
+  </app-doc-section>
+  <app-doc-section header="Contributing & License">
+    Code released under MIT license.
+    <hr>
+    <div class="text-dark">
+      Copyright 2019 Kamil Gałek
+      <br><br>
+      Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+      <br><br>
+      The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+      <br><br>
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+    </div>
+  </app-doc-section>
 </div>

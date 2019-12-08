@@ -9,7 +9,7 @@ declare var window: Window;
 })
 export class DndDropCoverFactoryService {
 
-  constructor(@Inject(DOCUMENT) private readonly document: Document,
+  constructor(@Inject(DOCUMENT) private readonly document: any,
               private readonly stylesService: DndStylesService) {
   }
 
